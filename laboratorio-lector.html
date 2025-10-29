@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratorio de Lectura Thinkio</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- React y ReactDOM -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    
+    <!-- Babel para JSX -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body style="margin: 0; padding: 0;">
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        import React, { useState, useEffect } from 'react';
+import { Clock, BookOpen, Target, TrendingUp, Award, Sparkles, ArrowRight, RotateCcw, ChevronRight } from 'lucide-react';
+
+// Base de datos de lecturas con diferentes niveles
+const LECTURAS = {
+  basico: [
+    {
+      id: 'b1',
+      titulo: 'Los eSports: Más que un Juego',
+      tema: 'Videojuegos',
+      texto: `Los deportes electrónicos, conocidos como eSports, han revolucionado el mundo del entretenimiento. En la última década, estos eventos han pasado de ser competencias entre amigos a torneos profesionales que llenan estadios enteros.
+
+Los jugadores profesionales entrenan durante horas cada día, desarrollando reflejos ultra-rápidos y estrategias complejas. Algunos de los mejores jugadores pueden ganar millones de dólares al año, similar a los atletas tradicionales.
+
+Los juegos más populares incluyen League of Legends, Fortnite, y Counter-Strike. Cada uno requiere diferentes habilidades: algunos necesitan trabajo en equipo excepcional, mientras otros dependen de la precisión individual.
+
+Las universidades ahora ofrecen becas para jugadores talentosos de eSports. Esto demuestra que los videojuegos competitivos son reconocidos como una actividad seria y valiosa.
+
+El futuro de los eSports se ve brillante. Con millones de espectadores en línea y transmisiones en plataformas como Twitch y YouTube, esta industria continúa creciendo exponencialmente cada año.`,
+      palabras: 156,
+      preguntas: [
+        {
+          pregunta: '¿Qué significa eSports?',
+          opciones: ['Deportes electrónicos', 'Deportes extremos', 'Entretenimiento deportivo', 'Ejercicios profesionales'],
+          correcta: 0
+        },
+        {
+          pregunta: '¿Cuánto pueden ganar los mejores jugadores profesionales?',
+          opciones: ['Miles de dólares', 'Millones de dólares', 'Cientos de dólares', 'No ganan dinero'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué ofrecen algunas universidades a jugadores talentosos?',
+          opciones: ['Computadoras gratis', 'Becas', 'Trabajo garantizado', 'Equipos de juego'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿En qué plataformas se transmiten los eSports?',
+          opciones: ['Solo en TV', 'Netflix y HBO', 'Twitch y YouTube', 'Radio'],
+          correcta: 2
+        },
+        {
+          pregunta: '¿Cómo es el futuro de los eSports según el texto?',
+          opciones: ['Incierto', 'Decreciente', 'Brillante', 'Estable'],
+          correcta: 2
+        }
+      ]
+    },
+    {
+      id: 'b2',
+      titulo: 'K-Pop: El Fenómeno Global',
+      tema: 'Música',
+      texto: `El K-Pop, abreviatura de música pop coreana, se ha convertido en uno de los géneros musicales más influyentes del mundo. Grupos como BTS y BLACKPINK han conquistado las listas de éxitos internacionales.
+
+Lo que hace especial al K-Pop es su combinación única de música pegadiza, coreografías impresionantes y producción visual de alta calidad. Los videos musicales son verdaderas obras de arte, con millones de dólares invertidos en su creación.
+
+Los idols del K-Pop pasan años entrenando antes de debutar. Aprenden a cantar, bailar, actuar y a veces hablar múltiples idiomas. Esta preparación intensiva es lo que los hace tan talentosos y versátiles.
+
+La industria del K-Pop también ha cambiado la forma en que los fans interactúan con sus artistas favoritos. A través de redes sociales, los fans pueden conectar directamente con los idols, creando comunidades globales apasionadas.
+
+El impacto cultural del K-Pop va más allá de la música. Ha inspirado moda, belleza, y ha puesto a Corea del Sur en el mapa cultural mundial.`,
+      palabras: 172,
+      preguntas: [
+        {
+          pregunta: '¿Qué significa K-Pop?',
+          opciones: ['Korean Popular', 'Pop coreano', 'Korean Pop', 'Kids Pop'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué grupos menciona el texto como ejemplos?',
+          opciones: ['BTS y EXO', 'BLACKPINK y TWICE', 'BTS y BLACKPINK', 'SuperJunior y Girls Generation'],
+          correcta: 2
+        },
+        {
+          pregunta: '¿Cuánto tiempo entrenan los idols antes de debutar?',
+          opciones: ['Meses', 'Semanas', 'Años', 'Días'],
+          correcta: 2
+        },
+        {
+          pregunta: '¿Qué característica NO menciona el texto sobre los videos de K-Pop?',
+          opciones: ['Alta calidad', 'Millones de dólares invertidos', 'Obras de arte', 'Animación 3D'],
+          correcta: 3
+        },
+        {
+          pregunta: '¿Qué ha cambiado la industria del K-Pop?',
+          opciones: ['Solo la música', 'La interacción entre fans y artistas', 'Los idiomas', 'La televisión'],
+          correcta: 1
+        }
+      ]
+    }
+  ],
+  intermedio: [
+    {
+      id: 'i1',
+      titulo: 'Inteligencia Artificial: Aliada o Amenaza',
+      tema: 'Tecnología',
+      texto: `La inteligencia artificial (IA) ha dejado de ser ciencia ficción para convertirse en parte integral de nuestra vida diaria. Desde asistentes virtuales como Siri y Alexa hasta algoritmos que recomiendan películas en Netflix, la IA está en todas partes.
+
+Sin embargo, el debate sobre su impacto futuro divide a expertos. Algunos, como Elon Musk, advierten sobre los riesgos potenciales de una IA superinteligente que podría superar la inteligencia humana. Otros, como Mark Zuckerberg, son más optimistas y ven a la IA como una herramienta que mejorará significativamente nuestra calidad de vida.
+
+En el campo laboral, la automatización impulsada por IA está transformando industrias enteras. Trabajos repetitivos están siendo reemplazados por máquinas más eficientes, lo que genera preocupaciones sobre el desempleo masivo. No obstante, también se están creando nuevos empleos relacionados con el desarrollo y mantenimiento de sistemas de IA.
+
+El aspecto ético es quizás el más complejo. ¿Deberían los algoritmos tomar decisiones médicas? ¿Es justo que un sistema automatizado determine quién obtiene un préstamo bancario? Estas preguntas no tienen respuestas simples y requieren un debate social profundo.
+
+A medida que la IA continúa evolucionando, la educación juega un papel crucial. No se trata solo de aprender a usar estas tecnologías, sino de entender sus implicaciones éticas, sociales y económicas para tomar decisiones informadas sobre su futuro desarrollo.`,
+      palabras: 237,
+      preguntas: [
+        {
+          pregunta: '¿Qué ejemplos de IA cotidiana menciona el texto?',
+          opciones: ['Robots y drones', 'Siri, Alexa y algoritmos de recomendación', 'Autos autónomos', 'Videojuegos'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué postura tiene Elon Musk según el texto?',
+          opciones: ['Optimista', 'Neutral', 'Advierte sobre riesgos', 'No se menciona'],
+          correcta: 2
+        },
+        {
+          pregunta: '¿Qué está pasando con los trabajos repetitivos?',
+          opciones: ['Están aumentando', 'Están siendo reemplazados por máquinas', 'No están cambiando', 'Pagan mejor'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Cuál es el aspecto más complejo según el texto?',
+          opciones: ['El técnico', 'El económico', 'El ético', 'El social'],
+          correcta: 2
+        },
+        {
+          pregunta: '¿Qué papel juega la educación en el contexto de IA?',
+          opciones: ['Solo enseñar programación', 'Entender implicaciones éticas y sociales', 'No es importante', 'Solo para expertos'],
+          correcta: 1
+        }
+      ]
+    },
+    {
+      id: 'i2',
+      titulo: 'Cambio Climático: La Crisis de Nuestra Generación',
+      tema: 'Medio Ambiente',
+      texto: `El cambio climático representa uno de los desafíos más apremiantes que enfrenta la humanidad. Según el Panel Intergubernamental sobre Cambio Climático (IPCC), la temperatura global ha aumentado aproximadamente 1.1°C desde la era preindustrial, y las consecuencias ya son visibles.
+
+Los fenómenos meteorológicos extremos se han vuelto más frecuentes e intensos. Huracanes devastadores, sequías prolongadas, incendios forestales masivos y olas de calor récord son ahora parte regular de las noticias globales. Estos eventos no solo causan destrucción física sino también millones de dólares en pérdidas económicas.
+
+El deshielo de los polos es particularmente preocupante. El Ártico está perdiendo hielo a un ritmo sin precedentes, lo que afecta los patrones climáticos globales y amenaza con elevar el nivel del mar. Ciudades costeras como Miami, Venecia y Dhaka podrían quedar parcialmente sumergidas en las próximas décadas si las tendencias actuales continúan.
+
+A pesar del panorama sombrío, hay razones para mantener esperanza. La energía renovable está creciendo exponencialmente, con la solar y eólica volviéndose cada vez más económicas. Muchos países están comprometiéndose con metas de emisiones netas cero para 2050.
+
+La acción individual también importa. Reducir el consumo de carne, usar transporte público, reciclar y apoyar políticas ambientales son pasos concretos que cada persona puede tomar. El cambio climático es un problema colectivo que requiere soluciones colectivas.`,
+      palabras: 246,
+      preguntas: [
+        {
+          pregunta: '¿Cuánto ha aumentado la temperatura global?',
+          opciones: ['0.5°C', '1.1°C', '2°C', '3°C'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué organismo menciona el texto sobre cambio climático?',
+          opciones: ['ONU', 'IPCC', 'NASA', 'Greenpeace'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué ciudades menciona como amenazadas por el nivel del mar?',
+          opciones: ['Nueva York, Londres, Tokio', 'Miami, Venecia, Dhaka', 'París, Roma, Madrid', 'Sidney, Auckland, Hong Kong'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué tipos de energía renovable menciona?',
+          opciones: ['Nuclear e hidráulica', 'Solar y eólica', 'Geotérmica y mareomotriz', 'Biomasa y gas natural'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué acción individual NO menciona el texto?',
+          opciones: ['Reducir consumo de carne', 'Usar transporte público', 'Comprar coches eléctricos', 'Reciclar'],
+          correcta: 2
+        }
+      ]
+    }
+  ],
+  avanzado: [
+    {
+      id: 'a1',
+      titulo: 'La Paradoja de la Información en la Era Digital',
+      tema: 'Tecnología y Sociedad',
+      texto: `Vivimos en lo que se conoce como la era de la información, un periodo histórico caracterizado por un acceso sin precedentes al conocimiento humano. Sin embargo, esta abundancia ha generado una paradoja inquietante: mientras más información está disponible, más difícil resulta discernir la verdad de la ficción, lo relevante de lo superfluo.
+
+El fenómeno de la "infoxicación" o sobrecarga informativa no es meramente una cuestión de volumen. Se trata de un problema multifacético que afecta nuestra capacidad cognitiva para procesar, analizar y sintetizar información de manera efectiva. Investigaciones en neurociencia cognitiva sugieren que la exposición constante a flujos de información fragmentada está reconfigurando nuestros circuitos neuronales, potencialmente reduciendo nuestra capacidad de atención sostenida y pensamiento profundo.
+
+El algoritmo se ha convertido en el nuevo guardián del conocimiento, determinando qué información llega a nosotros y cuál permanece invisible. Las plataformas digitales emplean sistemas de recomendación sofisticados que, aunque diseñados para personalizar nuestra experiencia, inadvertidamente crean "burbujas de filtro" que refuerzan nuestros sesgos preexistentes. Este efecto de cámara de eco no solo polariza el discurso público sino que erosiona nuestra capacidad para comprender perspectivas divergentes.
+
+La desinformación representa otro desafío crítico. Los actores malintencionados explotan la arquitectura de las redes sociales para diseminar información falsa a velocidades que superan ampliamente la capacidad de verificación. Un estudio del MIT encontró que las noticias falsas se propagan seis veces más rápido que las verdaderas en Twitter, principalmente porque apelan a emociones intensas.
+
+La solución requiere un enfoque multidimensional. Educacionalmente, necesitamos cultivar alfabetización digital crítica desde edades tempranas. Tecnológicamente, debemos diseñar sistemas que prioricen la calidad sobre el engagement. Socialmente, necesitamos fomentar una cultura de escepticismo constructivo y verificación. Solo así podremos convertir la abundancia de información de una maldición en la bendición que prometía ser.`,
+      palabras: 312,
+      preguntas: [
+        {
+          pregunta: '¿Qué es la "infoxicación" según el texto?',
+          opciones: ['Adicción a la información', 'Sobrecarga informativa', 'Información tóxica', 'Falta de información'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué efecto tiene la exposición a información fragmentada según investigaciones?',
+          opciones: ['Mejora la memoria', 'Reconfigura circuitos neuronales', 'No tiene efecto', 'Aumenta la inteligencia'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué son las "burbujas de filtro"?',
+          opciones: ['Sistemas de seguridad', 'Espacios que refuerzan sesgos preexistentes', 'Algoritmos de búsqueda', 'Redes sociales'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué encontró el estudio del MIT sobre noticias falsas?',
+          opciones: ['Se propagan más lento', 'Se propagan 6 veces más rápido', 'Se propagan igual', 'No se propagan'],
+          correcta: 1
+        },
+        {
+          pregunta: '¿Qué solución NO menciona el texto?',
+          opciones: ['Alfabetización digital crítica', 'Sistemas que priorizan calidad', 'Censura gubernamental', 'Cultura de verificación'],
+          correcta: 2
+        },
+        {
+          pregunta: '¿Qué emociones explotan las noticias falsas?',
+          opciones: ['Emociones neutras', 'Emociones intensas', 'Emociones positivas', 'No menciona emociones'],
+          correcta: 1
+        }
+      ]
+    }
+  ]
+};
+
+const RECURSOS_POR_NIVEL = {
+  principiante: {
+    titulo: 'Recursos para Principiantes',
+    articulos: [
+      { titulo: 'Fundamentos de Lectura Rápida', tema: 'Introducción a técnicas básicas' },
+      { titulo: 'Cómo Mejorar tu Concentración', tema: 'Ejercicios prácticos de enfoque' },
+      { titulo: 'La Técnica Pomodoro para Lectura', tema: 'Gestión del tiempo de práctica' }
+    ],
+    videos: [
+      { titulo: 'Pre-lectura: Tu Superpoder Secreto', duracion: '8 min' },
+      { titulo: 'Eliminando la Subvocalización', duracion: '10 min' }
+    ]
+  },
+  intermedio: {
+    titulo: 'Recursos para Nivel Intermedio',
+    articulos: [
+      { titulo: 'Técnica SQ3R Avanzada', tema: 'Lectura activa efectiva' },
+      { titulo: 'Mapas Mentales para Comprensión', tema: 'Síntesis visual de información' },
+      { titulo: 'Lectura Crítica: Más Allá de Entender', tema: 'Análisis profundo de textos' }
+    ],
+    videos: [
+      { titulo: 'Velocidad vs Comprensión: El Balance', duracion: '12 min' },
+      { titulo: 'Técnicas de Scanning y Skimming', duracion: '15 min' }
+    ]
+  },
+  avanzado: {
+    titulo: 'Recursos para Nivel Avanzado',
+    articulos: [
+      { titulo: 'Meta-lectura: Lectura de Segundo Orden', tema: 'Lectura académica avanzada' },
+      { titulo: 'Síntesis Multi-fuente', tema: 'Integración de información compleja' },
+      { titulo: 'Lectura en Múltiples Idiomas', tema: 'Estrategias políglota' }
+    ],
+    videos: [
+      { titulo: 'Lectura de Papers Científicos', duracion: '20 min' },
+      { titulo: 'Técnicas de Photo Reading', duracion: '18 min' }
+    ]
+  }
+};
+
+export default function LaboratorioLectura() {
+  const [pantalla, setPantalla] = useState('inicio');
+  const [nivelSeleccionado, setNivelSeleccionado] = useState(null);
+  const [lecturaActual, setLecturaActual] = useState(null);
+  const [tiempoInicio, setTiempoInicio] = useState(null);
+  const [tiempoFin, setTiempoFin] = useState(null);
+  const [respuestas, setRespuestas] = useState([]);
+  const [resultados, setResultados] = useState(null);
+  const [historial, setHistorial] = useState([]);
+
+  // Agregar fuente Poppins
+  useEffect(() => {
+    const link = document.createElement('link');
+    link.href = 'https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap';
+    link.rel = 'stylesheet';
+    document.head.appendChild(link);
+    document.body.style.fontFamily = "'Poppins', sans-serif";
+    return () => {
+      document.body.style.fontFamily = '';
+    };
+  }, []);
+
+  // Cargar historial al iniciar
+  useEffect(() => {
+    cargarHistorial();
+  }, []);
+
+  const cargarHistorial = async () => {
+    try {
+      const result = await window.storage.get('historial-lecturas');
+      if (result && result.value) {
+        setHistorial(JSON.parse(result.value));
+      }
+    } catch (error) {
+      console.log('No hay historial previo');
+    }
+  };
+
+  const guardarEnHistorial = async (resultado) => {
+    const nuevoHistorial = [...historial, resultado];
+    try {
+      await window.storage.set('historial-lecturas', JSON.stringify(nuevoHistorial));
+      setHistorial(nuevoHistorial);
+    } catch (error) {
+      console.error('Error guardando historial:', error);
+    }
+  };
+
+  const iniciarTest = (nivel) => {
+    const lecturas = LECTURAS[nivel];
+    const lecturaAleatoria = lecturas[Math.floor(Math.random() * lecturas.length)];
+    setNivelSeleccionado(nivel);
+    setLecturaActual(lecturaAleatoria);
+    setPantalla('instrucciones-lectura');
+  };
+
+  const comenzarLectura = () => {
+    setTiempoInicio(Date.now());
+    setPantalla('lectura');
+  };
+
+  const terminarLectura = () => {
+    setTiempoFin(Date.now());
+    setPantalla('cuestionario');
+  };
+
+  const responderPregunta = (indicePregunta, indiceRespuesta) => {
+    const nuevasRespuestas = [...respuestas];
+    nuevasRespuestas[indicePregunta] = indiceRespuesta;
+    setRespuestas(nuevasRespuestas);
+  };
+
+  const calcularResultados = () => {
+    const tiempoSegundos = (tiempoFin - tiempoInicio) / 1000;
+    const tiempoMinutos = tiempoSegundos / 60;
+    const velocidad = Math.round(lecturaActual.palabras / tiempoMinutos);
+    
+    let respuestasCorrectas = 0;
+    lecturaActual.preguntas.forEach((pregunta, index) => {
+      if (respuestas[index] === pregunta.correcta) {
+        respuestasCorrectas++;
+      }
+    });
+    
+    const comprension = Math.round((respuestasCorrectas / lecturaActual.preguntas.length) * 100);
+    
+    let nivelDetectado = 'principiante';
+    let mensaje = '';
+    
+    if (velocidad >= 300 && comprension >= 80) {
+      nivelDetectado = 'avanzado';
+      mensaje = '¡Excelente! Tienes habilidades avanzadas de lectura.';
+    } else if (velocidad >= 200 && comprension >= 70) {
+      nivelDetectado = 'intermedio';
+      mensaje = '¡Muy bien! Estás en nivel intermedio con buen potencial.';
+    } else {
+      nivelDetectado = 'principiante';
+      mensaje = 'Estás comenzando tu viaje. ¡Hay mucho espacio para crecer!';
+    }
+
+    const resultado = {
+      fecha: new Date().toISOString(),
+      velocidad,
+      comprension,
+      nivel: nivelDetectado,
+      lectura: lecturaActual.titulo,
+      tiempo: Math.round(tiempoSegundos)
+    };
+
+    guardarEnHistorial(resultado);
+    setResultados({ ...resultado, mensaje });
+    setPantalla('resultados');
+  };
+
+  const reiniciar = () => {
+    setPantalla('inicio');
+    setNivelSeleccionado(null);
+    setLecturaActual(null);
+    setTiempoInicio(null);
+    setTiempoFin(null);
+    setRespuestas([]);
+    setResultados(null);
+  };
+
+  // Pantalla de inicio
+  if (pantalla === 'inicio') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6" style={{fontFamily: "'Poppins', sans-serif"}}>
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="text-center mb-8">
+              <div className="flex items-center justify-center mb-4">
+                <Sparkles className="w-12 h-12" style={{color: '#0e4481'}} />
+              </div>
+              <h1 className="text-4xl font-extrabold mb-2" style={{color: '#0e4481'}}>
+                Laboratorio de Lectura
+              </h1>
+              <p className="text-lg font-medium" style={{color: '#0e4481', opacity: 0.8}}>
+                Descubre tu velocidad y comprensión lectora
+              </p>
+            </div>
+
+            <div className="border-l-4 p-6 mb-8 rounded-r-lg" style={{backgroundColor: '#30bdc4', backgroundColor: 'rgba(48, 189, 196, 0.15)', borderColor: '#30bdc4'}}>
+              <h2 className="text-xl font-bold mb-3 flex items-center" style={{color: '#0e4481'}}>
+                <BookOpen className="w-6 h-6 mr-2" />
+                ¿Cómo funciona este test?
+              </h2>
+              <ol className="space-y-2" style={{color: '#0e4481'}}>
+                <li className="flex items-start">
+                  <span className="font-bold mr-2">1.</span>
+                  <span>Elige tu nivel estimado (si es tu primera vez, comienza con Básico)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-bold mr-2">2.</span>
+                  <span>Lee un texto completo mientras el cronómetro registra tu tiempo</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-bold mr-2">3.</span>
+                  <span>Responde preguntas de comprensión sin volver al texto</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="font-bold mr-2">4.</span>
+                  <span>Recibe tu diagnóstico personalizado con recomendaciones específicas</span>
+                </li>
+              </ol>
+            </div>
+
+            <div className="mb-8">
+              <h3 className="text-xl font-bold mb-4 text-center" style={{color: '#0e4481'}}>
+                Selecciona tu nivel de inicio:
+              </h3>
+              <div className="grid md:grid-cols-3 gap-4">
+                <button
+                  onClick={() => iniciarTest('basico')}
+                  className="border-2 rounded-xl p-6 transition-all transform hover:scale-105"
+                  style={{backgroundColor: 'rgba(239, 231, 34, 0.15)', borderColor: '#efe722'}}
+                >
+                  <div className="text-center">
+                    <Target className="w-10 h-10 mx-auto mb-3" style={{color: '#e6be1c'}} />
+                    <h4 className="font-bold text-lg mb-2" style={{color: '#0e4481'}}>Básico</h4>
+                    <p className="text-sm font-medium" style={{color: '#0e4481', opacity: 0.7}}>150-200 palabras</p>
+                    <p className="text-xs mt-2" style={{color: '#0e4481', opacity: 0.6}}>Ideal si estás comenzando</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => iniciarTest('intermedio')}
+                  className="border-2 rounded-xl p-6 transition-all transform hover:scale-105"
+                  style={{backgroundColor: 'rgba(255, 152, 26, 0.15)', borderColor: '#ff981a'}}
+                >
+                  <div className="text-center">
+                    <TrendingUp className="w-10 h-10 mx-auto mb-3" style={{color: '#ff981a'}} />
+                    <h4 className="font-bold text-lg mb-2" style={{color: '#0e4481'}}>Intermedio</h4>
+                    <p className="text-sm font-medium" style={{color: '#0e4481', opacity: 0.7}}>220-250 palabras</p>
+                    <p className="text-xs mt-2" style={{color: '#0e4481', opacity: 0.6}}>Tienes experiencia previa</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => iniciarTest('avanzado')}
+                  className="border-2 rounded-xl p-6 transition-all transform hover:scale-105"
+                  style={{backgroundColor: 'rgba(48, 189, 196, 0.15)', borderColor: '#30bdc4'}}
+                >
+                  <div className="text-center">
+                    <Award className="w-10 h-10 mx-auto mb-3" style={{color: '#30bdc4'}} />
+                    <h4 className="font-bold text-lg mb-2" style={{color: '#0e4481'}}>Avanzado</h4>
+                    <p className="text-sm font-medium" style={{color: '#0e4481', opacity: 0.7}}>300+ palabras</p>
+                    <p className="text-xs mt-2" style={{color: '#0e4481', opacity: 0.6}}>Lectura académica compleja</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {historial.length > 0 && (
+              <div className="bg-gray-50 rounded-lg p-6">
+                <h3 className="font-bold mb-3 flex items-center" style={{color: '#0e4481'}}>
+                  <Clock className="w-5 h-5 mr-2" />
+                  Tu Progreso Reciente
+                </h3>
+                <div className="space-y-2">
+                  {historial.slice(-3).reverse().map((item, index) => (
+                    <div key={index} className="flex justify-between items-center text-sm bg-white p-3 rounded-lg">
+                      <span style={{color: '#0e4481', opacity: 0.7}}>{new Date(item.fecha).toLocaleDateString()}</span>
+                      <span className="font-bold" style={{color: '#30bdc4'}}>{item.velocidad} ppm</span>
+                      <span style={{color: '#0e4481', opacity: 0.7}}>{item.comprension}% comprensión</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pantalla de instrucciones antes de lectura
+  if (pantalla === 'instrucciones-lectura') {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6" style={{fontFamily: "'Poppins', sans-serif"}}>
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <h2 className="text-3xl font-extrabold mb-6 text-center" style={{color: '#0e4481'}}>
+              Preparado para leer
+            </h2>
+            
+            <div className="rounded-lg p-6 mb-6" style={{backgroundColor: 'rgba(48, 189, 196, 0.15)'}}>
+              <h3 className="font-bold text-lg mb-3" style={{color: '#0e4481'}}>
+                Tu lectura de hoy:
+              </h3>
+              <p className="text-2xl font-extrabold mb-2" style={{color: '#30bdc4'}}>
+                {lecturaActual.titulo}
+              </p>
+              <p style={{color: '#0e4481', opacity: 0.7}}>
+                Tema: {lecturaActual.tema} • {lecturaActual.palabras} palabras
+              </p>
+            </div>
+
+            <div className="border-l-4 p-6 mb-6" style={{backgroundColor: 'rgba(255, 152, 26, 0.15)', borderColor: '#ff981a'}}>
+              <h3 className="font-bold mb-3" style={{color: '#0e4481'}}>
+                📋 Instrucciones Importantes:
+              </h3>
+              <ul className="space-y-2" style={{color: '#0e4481'}}>
+                <li className="flex items-start">
+                  <ChevronRight className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" style={{color: '#ff981a'}} />
+                  <span>El cronómetro iniciará automáticamente cuando empieces</span>
+                </li>
+                <li className="flex items-start">
+                  <ChevronRight className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" style={{color: '#ff981a'}} />
+                  <span>Lee a tu ritmo natural, sin apresurarte ni ir muy lento</span>
+                </li>
+                <li className="flex items-start">
+                  <ChevronRight className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" style={{color: '#ff981a'}} />
+                  <span>Intenta recordar los detalles principales</span>
+                </li>
+                <li className="flex items-start">
+                  <ChevronRight className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" style={{color: '#ff981a'}} />
+                  <span>Cuando termines, haz clic en "Terminé de Leer"</span>
+                </li>
+                <li className="flex items-start">
+                  <ChevronRight className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" style={{color: '#ff981a'}} />
+                  <span>Luego responderás preguntas SIN volver al texto</span>
+                </li>
+              </ul>
+            </div>
+
+            <button
+              onClick={comenzarLectura}
+              className="w-full text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center text-lg hover:opacity-90"
+              style={{backgroundColor: '#0e4481'}}
+            >
+              <ArrowRight className="w-6 h-6 mr-2" />
+              Comenzar Lectura
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pantalla de lectura con cronómetro
+  if (pantalla === 'lectura') {
+    const [tiempoTranscurrido, setTiempoTranscurrido] = useState(0);
+
+    useEffect(() => {
+      const intervalo = setInterval(() => {
+        setTiempoTranscurrido(Math.floor((Date.now() - tiempoInicio) / 1000));
+      }, 1000);
+
+      return () => clearInterval(intervalo);
+    }, [tiempoInicio]);
+
+    const minutos = Math.floor(tiempoTranscurrido / 60);
+    const segundos = tiempoTranscurrido % 60;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6" style={{fontFamily: "'Poppins', sans-serif"}}>
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-2xl font-bold" style={{color: '#0e4481'}}>
+                {lecturaActual.titulo}
+              </h2>
+              <div className="px-6 py-3 rounded-lg" style={{backgroundColor: 'rgba(48, 189, 196, 0.2)'}}>
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-5 h-5" style={{color: '#30bdc4'}} />
+                  <span className="text-2xl font-mono font-bold" style={{color: '#30bdc4'}}>
+                    {String(minutos).padStart(2, '0')}:{String(segundos).padStart(2, '0')}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div className="prose max-w-none mb-8">
+              <div className="text-lg leading-relaxed whitespace-pre-line" style={{color: '#0e4481'}}>
+                {lecturaActual.texto}
+              </div>
+            </div>
+
+            <button
+              onClick={terminarLectura}
+              className="w-full text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center text-lg hover:opacity-90"
+              style={{backgroundColor: '#e6be1c'}}
+            >
+              <ArrowRight className="w-6 h-6 mr-2" />
+              Terminé de Leer - Ir a Preguntas
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pantalla de cuestionario
+  if (pantalla === 'cuestionario') {
+    const todasRespondidas = respuestas.length === lecturaActual.preguntas.length &&
+      respuestas.every(r => r !== undefined);
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6" style={{fontFamily: "'Poppins', sans-serif"}}>
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <h2 className="text-3xl font-extrabold mb-2 text-center" style={{color: '#0e4481'}}>
+              Test de Comprensión
+            </h2>
+            <p className="text-center mb-8" style={{color: '#0e4481', opacity: 0.7}}>
+              Responde sin volver al texto
+            </p>
+
+            <div className="space-y-6 mb-8">
+              {lecturaActual.preguntas.map((pregunta, indicePregunta) => (
+                <div key={indicePregunta} className="bg-gray-50 rounded-lg p-6">
+                  <h3 className="font-bold mb-4" style={{color: '#0e4481'}}>
+                    {indicePregunta + 1}. {pregunta.pregunta}
+                  </h3>
+                  <div className="space-y-3">
+                    {pregunta.opciones.map((opcion, indiceOpcion) => (
+                      <button
+                        key={indiceOpcion}
+                        onClick={() => responderPregunta(indicePregunta, indiceOpcion)}
+                        className="w-full text-left p-4 rounded-lg border-2 transition-all bg-white"
+                        style={{
+                          borderColor: respuestas[indicePregunta] === indiceOpcion ? '#30bdc4' : '#e5e7eb',
+                          backgroundColor: respuestas[indicePregunta] === indiceOpcion ? 'rgba(48, 189, 196, 0.1)' : 'white'
+                        }}
+                      >
+                        <span className="font-medium" style={{color: '#0e4481'}}>{opcion}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={calcularResultados}
+              disabled={!todasRespondidas}
+              className="w-full font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center text-lg text-white"
+              style={{
+                backgroundColor: todasRespondidas ? '#0e4481' : '#d1d5db',
+                cursor: todasRespondidas ? 'pointer' : 'not-allowed',
+                opacity: todasRespondidas ? 1 : 0.6
+              }}
+            >
+              <ArrowRight className="w-6 h-6 mr-2" />
+              Ver Mis Resultados
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Pantalla de resultados
+  if (pantalla === 'resultados') {
+    const recursos = RECURSOS_POR_NIVEL[resultados.nivel];
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-blue-100 p-6" style={{fontFamily: "'Poppins', sans-serif"}}>
+        <div className="max-w-4xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8">
+            <div className="text-center mb-8">
+              <Award className="w-16 h-16 mx-auto mb-4" style={{color: '#efe722'}} />
+              <h2 className="text-3xl font-extrabold mb-2" style={{color: '#0e4481'}}>
+                ¡Test Completado!
+              </h2>
+              <p className="text-lg font-medium" style={{color: '#0e4481', opacity: 0.8}}>
+                {resultados.mensaje}
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              <div className="rounded-xl p-6 text-white" style={{background: 'linear-gradient(135deg, #30bdc4 0%, #0e4481 100%)'}}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="opacity-90">Velocidad de Lectura</span>
+                  <TrendingUp className="w-6 h-6" />
+                </div>
+                <p className="text-4xl font-extrabold mb-1">{resultados.velocidad}</p>
+                <p className="opacity-90">palabras por minuto</p>
+              </div>
+
+              <div className="rounded-xl p-6 text-white" style={{background: 'linear-gradient(135deg, #e6be1c 0%, #efe722 100%)'}}>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="opacity-90">Comprensión Lectora</span>
+                  <Target className="w-6 h-6" />
+                </div>
+                <p className="text-4xl font-extrabold mb-1">{resultados.comprension}%</p>
+                <p className="opacity-90">de respuestas correctas</p>
+              </div>
+            </div>
+
+            <div className="rounded-lg p-6 mb-8" style={{backgroundColor: 'rgba(48, 189, 196, 0.15)'}}>
+              <h3 className="text-xl font-extrabold mb-3" style={{color: '#0e4481'}}>
+                Tu Nivel Detectado: {resultados.nivel.charAt(0).toUpperCase() + resultados.nivel.slice(1)}
+              </h3>
+              <p className="font-medium" style={{color: '#0e4481', opacity: 0.8}}>
+                {resultados.nivel === 'principiante' && 'Estás en las primeras etapas del desarrollo de habilidades de lectura avanzada. Con práctica constante, verás mejoras significativas.'}
+                {resultados.nivel === 'intermedio' && 'Tienes una base sólida. Estás listo para técnicas más avanzadas que te llevarán al siguiente nivel.'}
+                {resultados.nivel === 'avanzado' && 'Tienes habilidades excepcionales de lectura. Enfócate en mantener este nivel y aplicarlo a textos cada vez más complejos.'}
+              </p>
+            </div>
+
+            <div className="bg-gray-50 rounded-lg p-6 mb-8">
+              <h3 className="text-xl font-extrabold mb-4" style={{color: '#0e4481'}}>
+                {recursos.titulo}
+              </h3>
+              
+              <div className="mb-6">
+                <h4 className="font-bold mb-3 flex items-center" style={{color: '#0e4481'}}>
+                  <BookOpen className="w-5 h-5 mr-2" style={{color: '#ff981a'}} />
+                  Artículos Recomendados
+                </h4>
+                <div className="space-y-2">
+                  {recursos.articulos.map((articulo, index) => (
+                    <div key={index} className="bg-white p-4 rounded-lg border-2" style={{borderColor: '#e5e7eb'}}>
+                      <p className="font-bold" style={{color: '#0e4481'}}>{articulo.titulo}</p>
+                      <p className="text-sm" style={{color: '#0e4481', opacity: 0.7}}>{articulo.tema}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-bold mb-3 flex items-center" style={{color: '#0e4481'}}>
+                  <Sparkles className="w-5 h-5 mr-2" style={{color: '#ff981a'}} />
+                  Videos Tutoriales
+                </h4>
+                <div className="space-y-2">
+                  {recursos.videos.map((video, index) => (
+                    <div key={index} className="bg-white p-4 rounded-lg border-2 flex justify-between items-center" style={{borderColor: '#e5e7eb'}}>
+                      <p className="font-bold" style={{color: '#0e4481'}}>{video.titulo}</p>
+                      <span className="text-sm" style={{color: '#0e4481', opacity: 0.7}}>{video.duracion}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-4">
+              <button
+                onClick={reiniciar}
+                className="flex-1 text-white font-bold py-4 px-6 rounded-lg transition-all flex items-center justify-center hover:opacity-90"
+                style={{backgroundColor: '#0e4481'}}
+              >
+                <RotateCcw className="w-5 h-5 mr-2" />
+                Hacer Otro Test
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
+}
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<LaboratorioLectura />);
+    </script>
+</body>
+</html>
